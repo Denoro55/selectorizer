@@ -1,0 +1,20 @@
+{
+  "name": "selectorizer",
+  "version": "1.0.7",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "webpack-dev-server --mode development --open",
+    "build": "webpack --mode production",
+    "babel": "babel src -d dist"
+  },
+  "keywords": [],
+  "author": {
+    "name": "Denis Chertenko",
+    "email": "denis.chertenko@mail.ru"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "gulp": "^4.0.2"
+  }
+}

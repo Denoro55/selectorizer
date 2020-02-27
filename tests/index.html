@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        .app {
+            display: flex;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <select class="select-native select-1" name="">
+            <option value="">Вариант 5</option>
+            <option value="Вариант 2">Вариант 2</option>
+        </select>
+        <select class="select-native select-2" name="">
+            <option value="Вариант 1">Вариант 3</option>
+            <option value="Вариант 2">Вариант 4</option>
+        </select>
+        <select class="select-native select-2" name="">
+            <option value="Вариант 1">Вариант 5</option>
+            <option value="Вариант 2">Вариант 6</option>
+        </select>
+    </div>
+    <script src="../index.js"></script>
+    <script>
+        const selects = document.querySelectorAll('.select-native');
+        selectorize(selects, {
+            callbacks: {
+                onchange: (el, value) => {
+                    console.log(el, value);
+                }
+            }
+        });
+        selectorize(selects[0], {
+            type: 'change',
+            value: 'Вариант 2'
+        });
+    </script>
+</body>
+</html>
