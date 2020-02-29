@@ -1,11 +1,11 @@
-.select {
+.selectorizer {
   display: flex;
   align-items: center;
   position: relative;
   border: 1px solid #cacaca;
   border-radius: 3px;
   cursor: pointer; }
-  .select select {
+  .selectorizer select {
     position: absolute;
     left: 0;
     top: 0;
@@ -13,16 +13,16 @@
     height: 100%;
     opacity: 0;
     z-index: -1; }
-  .select ul {
+  .selectorizer ul {
     margin: 0;
     padding: 0; }
-    .select ul li {
+    .selectorizer ul li {
       list-style: none; }
-  .select__inner {
+  .selectorizer__inner {
     width: 100%;
     position: relative;
     padding: 7px 28px 7px 10px; }
-  .select__icon {
+  .selectorizer__icon {
     position: absolute;
     right: 10px;
     top: 50%;
@@ -34,25 +34,30 @@
     transform: rotate(135deg);
     transform-origin: center;
     transition: all .3s; }
-  .select__list {
+  .selectorizer__list {
     position: absolute;
     left: -1px;
     right: -1px;
     top: 100%;
     border: 1px solid #9e9e9e;
     background: #fff;
-    z-index: 2; }
-  .select__item {
+    z-index: 2;
+    display: none; }
+  .selectorizer__item {
     padding: 5px 8px; }
-    .select__item:hover {
+    .selectorizer__item:hover {
       background: #2196f3;
       color: #fff; }
+  .selectorizer__item.active {
+    background: #2196f3;
+    color: #fff; }
 
-.select.opened .select__icon {
+.selectorizer.opened .selectorizer__list {
+  display: block; }
+.selectorizer.opened .selectorizer__icon {
   transform: rotate(-45deg) translate(-3px, 3px); }
 
-@media screen and (max-width: 767px) {
-  .select select {
-    z-index: 1; } }
+select.native {
+  z-index: 1; }
 
 /*# sourceMappingURL=style.css.map */

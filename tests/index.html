@@ -13,32 +13,62 @@
 <body>
     <div class="app">
         <select class="select-native select-1" name="">
-            <option value="">Вариант 5</option>
-            <option value="Вариант 2">Вариант 2</option>
+            <option value="">default</option>
+            <option value="value #2">value #2</option>
+            <option value="value #7">value #7</option>
         </select>
         <select class="select-native select-2" name="">
-            <option value="Вариант 1">Вариант 3</option>
-            <option value="Вариант 2">Вариант 4</option>
+            <option value="default">default</option>
+            <option value="value #4">value #4</option>
+            <option value="value #7">value #7</option>
         </select>
         <select class="select-native select-2" name="">
-            <option value="Вариант 1">Вариант 5</option>
-            <option value="Вариант 2">Вариант 6</option>
+            <option value="default">default</option>
+            <option value="value #6">value #6</option>
+            <option value="value #7">value #7</option>
         </select>
     </div>
     <script src="../index.js"></script>
     <script>
-        const selects = document.querySelectorAll('.select-native');
+
+        const selects = document.querySelectorAll('select');
+
         selectorize(selects, {
-            callbacks: {
-                onchange: (el, value) => {
-                    console.log(el, value);
-                }
-            }
+            nativeOnMobile: true,
+            iconHtml: '<div class="my-icon"></div>'
         });
-        selectorize(selects[0], {
-            type: 'change',
-            value: 'Вариант 2'
+
+        selectorize(selects).trigger('change', 'value #7');
+
+        selectorize(selects).on('selectorizer-open', (select, value) => {
+            console.log('open!', select, value)
         });
+
+        selectorize(selects).on('selectorizer-close', (select, value) => {
+            console.log('close!', select, value)
+        });
+
+        selectorize(selects).on('selectorizer-before-open', (select, value) => {
+            console.log('before open!', select, value)
+        });
+
+        selectorize(selects).on('selectorizer-before-close', (select, value) => {
+            console.log('before close!', select, value)
+        });
+
+        selectorize(selects).on('selectorizer-change', (select, value, prevValue) => { // handler
+            console.log('value changed ', select, value, prevValue);
+        });
+
+        const option = document.createElement('option');
+        option.value = 'newValue';
+        option.text = 'newValue';
+        selects[0].append(option);
+
+        setTimeout(() => {
+            selectorize(selects).trigger('refresh');
+        }, 3000);
+
     </script>
 </body>
 </html>
