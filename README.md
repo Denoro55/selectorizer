@@ -1,14 +1,25 @@
 This package with native javascript will help you to create a simple wrapper for your selects and get useful methods.
 
-**Package requires babel**
+``
+npm i selectorizer --save-dev
+``
+
+##### Version 4.0.0
+- fixed errors in Internet Explorer 10+
+- methods has become shorter (selectorizer-open => open)
+- fixed rendering position of list after refresh
+
+
+**Works in IE 10+**
 
 ### implemented methods:
 - trigger (change, refresh)
-- on (selectorizer-change, selectorizer-before-open, selectorizer-open, selectorizer-before-close, selectorizer-close)
+- on (change, before-open, open, before-close, close)
 
 ### options:
-- nativeOnMobile
-- iconHtml
+- nativeOnMobile (boolean)
+- iconHtml (string)
+- classes (string or array)
 
 ## How to use:
 
@@ -16,42 +27,47 @@ This package with native javascript will help you to create a simple wrapper for
 import selectorize from 'selectorizer';
 import 'selectorizer/style.css';
 
-const selects = document.querySelectorAll('select');
+var selects = document.querySelectorAll("select");
 
 selectorize(selects, {
     nativeOnMobile: true,
-    iconHtml: '<div class="my-icon"></div>'
+    iconHtml: '<div class="my-icon"></div>',
+    classes: ['my-class', 'my-class-2']
 });
 
-selectorize(selects).trigger('change', 'value #7'); // changes value of all selects
+selectorize(selects).trigger("change", "value #7");  // change value of all selects
 
-selectorize(selects).on('selectorizer-open', (select, value) => {
-    console.log('open!', select, value)
+selectorize(selects).on("open", function(select, value) {
+    console.log("open!", select, value);
 });
 
-selectorize(selects).on('selectorizer-close', (select, value) => {
-    console.log('close!', select, value)
+selectorize(selects).on("close", function(select, value) {
+    console.log("close!", select, value);
 });
 
-selectorize(selects).on('selectorizer-before-open', (select, value) => {
-    console.log('before open!', select, value)
+selectorize(selects).on("before-open", function(select, value) {
+    console.log("before open!", select, value);
 });
 
-selectorize(selects).on('selectorizer-before-close', (select, value) => {
-    console.log('before close!', select, value)
+selectorize(selects).on("before-close", function(select, value) {
+    console.log("before close!", select, value);
 });
 
-selectorize(selects).on('selectorizer-change', (select, value, prevValue) => { // handler
-    console.log('value changed ', select, value, prevValue);
+selectorize(selects).on("change", function(
+    select,
+    value,
+    prevValue
+) {
+    console.log("value changed ", select, value, prevValue);
 });
 
-const option = document.createElement('option');
-option.value = 'newValue';
-option.text = 'newValue';
-selects[0].append(option);
+var option = document.createElement("option");
+option.value = "newValue";
+option.text = "newValue";
+selects[0].appendChild(option);
 
-setTimeout(() => {
-    selectorize(selects[0]).trigger('refresh'); // refresh list
+setTimeout(function() {
+    selectorize(selects).trigger("refresh"); // refresh list
 }, 3000);
 ```
 

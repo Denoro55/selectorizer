@@ -1,20 +1,26 @@
 {
   "name": "selectorizer",
-  "version": "3.0.1",
-  "description": "",
+  "version": "4.0.0",
+  "description": "The package for convenient work with selects",
   "main": "index.js",
   "scripts": {
-    "dev": "webpack-dev-server --mode development --open",
-    "build": "webpack --mode production",
-    "babel": "babel src -d dist"
+    "babel": "babel src -d ./",
+    "watch": "babel src -d ./ -w"
   },
   "keywords": [],
   "author": {
     "name": "Denis Chertenko",
     "email": "denis.chertenko@mail.ru"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Denoro55/selectorizer.git"
+  },
   "license": "ISC",
   "devDependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.8.6",
+    "@babel/preset-env": "^7.8.6",
     "gulp": "^4.0.2"
   }
 }

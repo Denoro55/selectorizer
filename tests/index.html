@@ -8,6 +8,15 @@
         .app {
             display: flex;
         }
+
+        .div {
+            width: 50px;
+            height: 50px;
+            background: aqua;
+        }
+        .space {
+            margin-top: 1000px;
+        }
     </style>
 </head>
 <body>
@@ -27,46 +36,64 @@
             <option value="value #6">value #6</option>
             <option value="value #7">value #7</option>
         </select>
+        <div class="div"></div>
+    </div>
+    <div class="space">
+        <select class="select-native select-2" name="">
+            <option value="default">default</option>
+            <option value="value #6">value #6</option>
+            <option value="value #7">value #7</option>
+        </select>
     </div>
     <script src="../index.js"></script>
     <script>
 
-        const selects = document.querySelectorAll('select');
+        // element that will be wrapped
+        var el = document.querySelector('div.div');
+        document.body.addEventListener('click', function (e) {
+            console.log('my click')
+        });
 
+        var selects = document.querySelectorAll("select");
         selectorize(selects, {
             nativeOnMobile: true,
-            iconHtml: '<div class="my-icon"></div>'
+            iconHtml: '<div class="my-icon"></div>',
+            classes: ['my-class', 'my-class-2']
         });
 
-        selectorize(selects).trigger('change', 'value #7');
+        selectorize(selects).trigger("change", "value #7");
 
-        selectorize(selects).on('selectorizer-open', (select, value) => {
-            console.log('open!', select, value)
+        selectorize(selects).on("open", function(select, value) {
+            console.log("open!", select, value);
         });
 
-        selectorize(selects).on('selectorizer-close', (select, value) => {
-            console.log('close!', select, value)
+        selectorize(selects).on("close", function(select, value) {
+            console.log("close!", select, value);
         });
 
-        selectorize(selects).on('selectorizer-before-open', (select, value) => {
-            console.log('before open!', select, value)
+        selectorize(selects).on("before-open", function(select, value) {
+            console.log("before open!", select, value);
         });
 
-        selectorize(selects).on('selectorizer-before-close', (select, value) => {
-            console.log('before close!', select, value)
+        selectorize(selects).on("before-close", function(select, value) {
+            console.log("before close!", select, value);
         });
 
-        selectorize(selects).on('selectorizer-change', (select, value, prevValue) => { // handler
-            console.log('value changed ', select, value, prevValue);
+        selectorize(selects).on("change", function(
+            select,
+            value,
+            prevValue
+        ) {
+            console.log("value changed ", select, value, prevValue);
         });
 
-        const option = document.createElement('option');
-        option.value = 'newValue';
-        option.text = 'newValue';
-        selects[0].append(option);
+        var option = document.createElement("option");
+        option.value = "newValue";
+        option.text = "newValue";
+        selects[0].appendChild(option);
 
-        setTimeout(() => {
-            selectorize(selects).trigger('refresh');
+        setTimeout(function() {
+            selectorize(selects).trigger("refresh");
         }, 3000);
 
     </script>

@@ -16,6 +16,7 @@ $color: #2196f3;
         height: 100%;
         opacity: 0;
         z-index: -1;
+        display: none;
     }
 
     ul {
@@ -28,9 +29,13 @@ $color: #2196f3;
     }
 
     &__inner {
+        display: flex;
+        align-items: center;
         width: 100%;
+        height: 100%;
         position: relative;
         padding: 7px 28px 7px 10px;
+        box-sizing: border-box;
     }
 
     &__icon {
@@ -84,5 +89,6 @@ $color: #2196f3;
 }
 
 select.native {
+    display: block;
     z-index: 1;
 }
