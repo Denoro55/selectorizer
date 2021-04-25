@@ -82,7 +82,6 @@ if (singleSelect) {
 }
 
 // Warning! If you want to reinit your selectorizer just specify second argument
-// Note that current value will reset as reinit calls destroy method
 const selects = document.querySelectorAll("select");
 
 // first init
