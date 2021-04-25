@@ -1,0 +1,38 @@
+import { IElements, IState, ISelectOption, IOptions, IExtendedOptions } from "./types";
+declare class Selectorizer {
+    readonly elements: IElements;
+    readonly state: IState;
+    readonly options: IExtendedOptions;
+    constructor(select: HTMLSelectElement, options?: IOptions);
+    private validateConfig;
+    private init;
+    private initIcon;
+    private initOptions;
+    private initListeners;
+    private removeListeners;
+    private onDocumentClick;
+    private onResizeListener;
+    private onSelectChangeListener;
+    private toggleOpened;
+    private getClasses;
+    private getOptionByValue;
+    open(): void;
+    close(): void;
+    change(value: string): void;
+    refresh(): void;
+    private isSelectNative;
+    private addNativeOption;
+    private removeOptions;
+    setOptions(newOptions: ISelectOption[]): void;
+    addOptions(newOptions: ISelectOption[]): void;
+    getWrapper(): HTMLElement | null;
+    getSelect(): HTMLSelectElement;
+    getElements(): IElements;
+    getState(): IState;
+    getConfig(): IExtendedOptions;
+    destroy(): void;
+    private renderDropdownList;
+    private preRender;
+    private render;
+}
+export { Selectorizer };

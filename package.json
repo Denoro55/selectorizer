@@ -2,10 +2,17 @@
   "name": "selectorizer",
   "version": "4.0.0",
   "description": "The package for convenient work with selects",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
-    "babel": "babel src -d ./",
-    "watch": "babel src -d ./ -w"
+    "build": "cross-env NODE_ENV=production webpack --mode production",
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --mode development --open",
+    "deploy": "npm run build && gh-pages -d dist",
+    "lint": "eslint . --ext .ts",
+    "test": "jest --colors",
+    "prepare": "yarn lib && yarn cp && yarn cp:dts",
+    "lib": "tsc -p tsconfig.json",
+    "cp": "copyfiles -u 1 -a -e \"src/**/*.ts*\" \"src/**/*\" \"lib\"",
+    "cp:dts": "copyfiles -u 1 -a \"src/**/*.d.ts\" lib"
   },
   "keywords": [],
   "author": {
@@ -18,9 +25,32 @@
   },
   "license": "ISC",
   "devDependencies": {
-    "@babel/cli": "^7.8.4",
-    "@babel/core": "^7.8.6",
-    "@babel/preset-env": "^7.8.6",
-    "gulp": "^4.0.2"
+    "@babel/core": "^7.13.16",
+    "@babel/preset-env": "^7.13.15",
+    "@types/jest": "^26.0.22",
+    "babel-loader": "^8.2.2",
+    "clean-webpack-plugin": "^3.0.0",
+    "copyfiles": "^2.4.1",
+    "cross-env": "^7.0.3",
+    "css-loader": "^5.0.2",
+    "html-webpack-plugin": "^4.5.1",
+    "jest": "^26.6.3",
+    "sass": "^1.32.7",
+    "sass-loader": "^10.1.1",
+    "style-loader": "^2.0.0",
+    "ts-jest": "^26.5.5",
+    "ts-loader": "^8.0.17",
+    "typescript": "^4.1.5",
+    "webpack": "^4.46.0",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.2"
+  },
+  "dependencies": {
+    "@babel/polyfill": "^7.12.1"
+  },
+  "browserslist": {
+    "development": [
+      ">0.2%"
+    ]
   }
 }
