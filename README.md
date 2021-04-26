@@ -1,6 +1,8 @@
 Do you wanna beautify your selects using pure javascript or typescript? Ok. This package was created for you.
 I have written the most used methods in my opinion.
 
+![](.images/preview.png)
+
 ##### Version 5.0.0
 
 - package has fully rewritten in typescript
