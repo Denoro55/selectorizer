@@ -1,6 +1,6 @@
 {
   "name": "selectorizer",
-  "version": "5.0.2",
+  "version": "5.1.0",
   "description": "The package for convenient work with selects",
   "main": "lib/index.js",
   "scripts": {
