@@ -1,5 +1,7 @@
-$color_active: #2196f3;
-$color_hover: #a2a2a2;
+$color_active: #3f51b5;
+$color_hover: #03a9f4;
+$color_white: #FFF;
+$color_disabled: #868686;
 
 .selectorizer {
   position: relative;
@@ -49,7 +51,7 @@ $color_hover: #a2a2a2;
     right: -1px;
     top: 100%;
     border: 1px solid #ddd;
-    background: #fff;
+    background: $color_white;
     z-index: 2;
     display: none;
     overflow: auto;
@@ -61,12 +63,17 @@ $color_hover: #a2a2a2;
 
     &:hover {
       background: $color_hover;
-      color: #fff;
+      color: $color_white;
     }
 
     &.selected {
       background: $color_active;
-      color: #FFF;
+      color: $color_white;
+    }
+
+    &.disabled {
+      background: $color_disabled;
+      color: $color_white;
     }
   }
 

@@ -10,6 +10,7 @@ declare class Selectorizer {
     private initOptions;
     private initListeners;
     private removeListeners;
+    private onDropdownItemClick;
     private onDocumentClick;
     private onResizeListener;
     private onSelectChangeListener;
@@ -31,8 +32,8 @@ declare class Selectorizer {
     getState(): IState;
     getConfig(): IExtendedOptions;
     destroy(): void;
-    private renderDropdownList;
     private preRender;
+    private renderDropdownList;
     private render;
 }
 export { Selectorizer };

@@ -28,8 +28,8 @@ export const wrapElement = ($parent: HTMLElement, $child: HTMLElement) => {
 
 export const getOptions = ($optionsNodes: NodeList) => {
   const options: ISelectOption[] = Array.prototype.slice.call($optionsNodes);
-  return options.map(({ text, value }) => {
-    return { text, value };
+  return options.map(({ text, value, disabled }) => {
+    return { text, value, disabled };
   });
 };
 

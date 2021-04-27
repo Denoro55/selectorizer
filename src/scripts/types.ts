@@ -3,6 +3,7 @@ import { Selectorizer } from "./Selectorizer";
 export interface ISelectOption {
   text: string;
   value: string;
+  disabled?: boolean;
 }
 
 export interface IElementDataset {
@@ -31,10 +32,6 @@ export enum EClasses {
   open = "open",
   native = "native",
   inverted = "inverted",
-}
-
-export interface ICallbacks {
-  onRemove: () => void;
 }
 
 export interface IOptions {

@@ -4,6 +4,7 @@ export declare const wrapElement: ($parent: HTMLElement, $child: HTMLElement) =>
 export declare const getOptions: ($optionsNodes: NodeList) => {
     text: string;
     value: string;
+    disabled: boolean | undefined;
 }[];
 export declare const getPluginClass: (clz: string, delimiter: "__" | "-") => string;
 export declare const toPx: (value: number) => string;

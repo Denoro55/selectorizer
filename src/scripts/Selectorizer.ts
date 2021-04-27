@@ -46,6 +46,7 @@ class Selectorizer {
     this.onResizeListener = this.onResizeListener.bind(this);
     this.onSelectChangeListener = this.onSelectChangeListener.bind(this);
     this.onDocumentClick = this.onDocumentClick.bind(this);
+    this.onDropdownItemClick = this.onDropdownItemClick.bind(this);
 
     this.validateConfig();
     this.init();
@@ -136,22 +137,7 @@ class Selectorizer {
     window.addEventListener("resize", this.onResizeListener);
     window.addEventListener("click", this.onDocumentClick, true);
 
-    this.elements.$dropdown?.addEventListener("click", (e: MouseEvent) => {
-      if (!(e.target instanceof HTMLElement)) {
-        return;
-      }
-
-      const $dropdownItem = getClosestElement(e.target, CLASSES.dropdownItem);
-
-      if ($dropdownItem) {
-        const dataIndex = $dropdownItem.getAttribute("index");
-        const index = dataIndex ? +dataIndex : null;
-
-        if (index !== null) {
-          this.change(this.state.options[index].value);
-        }
-      }
-    });
+    this.elements.$dropdown?.addEventListener("click", this.onDropdownItemClick);
 
     this.elements.$inner?.addEventListener("click", (e: MouseEvent) => {
       if (!(e.target instanceof HTMLElement)) {
@@ -176,6 +162,23 @@ class Selectorizer {
     );
   }
 
+  private onDropdownItemClick(e: MouseEvent) {
+    if (!(e.target instanceof HTMLElement)) {
+      return;
+    }
+
+    const $dropdownItem = getClosestElement(e.target, CLASSES.dropdownItem);
+
+    if ($dropdownItem) {
+      const dataIndex = $dropdownItem.getAttribute("data-index");
+      const index = dataIndex ? +dataIndex : null;
+
+      if (index !== null && this.state.options[index] && !this.state.options[index].disabled) {
+        this.change(this.state.options[index].value);
+      }
+    }
+  }
+
   private onDocumentClick(e: MouseEvent) {
     const $target = e.target as Node; // TODO: fix typecast
 
@@ -195,8 +198,6 @@ class Selectorizer {
   }
 
   private onSelectChangeListener(e: Event) {
-    console.log('change');
-
     if (!(e.target instanceof HTMLSelectElement)) {
       return;
     }
@@ -306,6 +307,7 @@ class Selectorizer {
     var newOption = document.createElement("option");
     newOption.value = option.value;
     newOption.text = option.text;
+    newOption.disabled = !!option.disabled;
     this.elements.$select.appendChild(newOption);
   }
 
@@ -373,29 +375,6 @@ class Selectorizer {
     }
   }
 
-  private renderDropdownList = (options: ISelectOption[]) => {
-    const { currentValue } = this.state;
-    const { renderOption } = this.options;
-
-    return options
-      .map((option, index) => {
-        const isSelected = currentValue === option.value;
-        const classes = [CLASSES.dropdownItem];
-        if (isSelected) {
-          classes.push("selected");
-        }
-
-        const optionContent = renderOption
-          ? renderOption(this, option, isSelected)
-          : option.text;
-
-        return createElement("div", classes, optionContent, [
-          { key: "index", value: index },
-        ]).outerHTML;
-      })
-      .join("");
-  };
-
   private preRender() {
     const { calculateDropdownDir } = this.options;
     this.elements.$select.value = this.state.currentValue;
@@ -417,6 +396,36 @@ class Selectorizer {
 
     this.render();
   }
+
+  private renderDropdownList = (options: ISelectOption[]) => {
+    const { currentValue } = this.state;
+    const { renderOption } = this.options;
+
+    return options
+      .map((option, index) => {
+        const { value, text, disabled } = option;
+
+        const isSelected = currentValue === value;
+        const classes = [CLASSES.dropdownItem];
+
+        if (isSelected) {
+          classes.push("selected");
+        }
+
+        if (disabled) {
+          classes.push("disabled");
+        }
+
+        const optionContent = renderOption
+          ? renderOption(this, option, isSelected)
+          : text;
+
+        return createElement("div", classes, optionContent, [
+          { key: "data-index", value: index },
+        ]).outerHTML;
+      })
+      .join("");
+  };
 
   private render() {
     const { $label, $wrapper, $dropdown } = this.elements;
