@@ -4,6 +4,7 @@ export interface ISelectOption {
   text: string;
   value: string;
   disabled?: boolean;
+  selected?: boolean;
 }
 
 export interface IElementDataset {
@@ -14,8 +15,8 @@ export interface IElementDataset {
 export interface IState {
   isOpened: boolean;
   isNative: boolean;
-  currentValue: string;
   options: ISelectOption[];
+  selected: number[];
   dir: "bottom" | "top";
 }
 
@@ -57,14 +58,15 @@ export interface IOptions {
   placeholder?: string;
   renderOption?: (
     select: Selectorizer,
-    option: ISelectOption,
-    isSelected: boolean
+    option: ISelectOption
   ) => string;
   isMobile?: () => boolean;
   renderLabel?: (select: Selectorizer) => string;
-  renderPlaceholder?: (select: Selectorizer, placeholder: string) => string;
   closeOnClickOutside?: boolean;
-  calculateDropdownDir?: (select: Selectorizer) => 'bottom' | 'top'
+  calculateDropdownDir?: (select: Selectorizer) => 'bottom' | 'top';
+  multiple?: {
+    delimiter: string;
+  }
 }
 
 export interface IExtendedOptions extends IOptions {

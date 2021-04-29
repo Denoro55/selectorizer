@@ -1,7 +1,4 @@
-$color_active: #3f51b5;
-$color_hover: #03a9f4;
-$color_white: #FFF;
-$color_disabled: #868686;
+@import './vars';
 
 .selectorizer {
   position: relative;
@@ -33,9 +30,10 @@ $color_disabled: #868686;
   }
 
   &__inner {
-    padding: 10px 15px;
-    min-height: 38px;
+    padding: 12px 15px;
+    min-height: 42px;
     box-sizing: border-box;
+    background-color: $color_white;
   }
 
   &__label {
@@ -60,6 +58,11 @@ $color_disabled: #868686;
   &__dropdown-item {
     padding: 10px 15px;
     cursor: pointer;
+    border-bottom: 1px solid $color_white;
+
+    &:last-child {
+      border-bottom: 0;
+    }
 
     &:hover {
       background: $color_hover;

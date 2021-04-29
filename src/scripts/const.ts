@@ -1,5 +1,3 @@
-import { getPluginClass } from './helpers';
-
 export const PLUGIN_NAME: string = "selectorizer";
 
 export const DEFAULT_OPTIONS = {
@@ -10,20 +8,15 @@ export const DEFAULT_OPTIONS = {
     ),
   classes: [],
   placeholder: 'Select value',
-  closeOnClickOutside: true,
+  closeOnClickOutside: true
 };
+
+export const DEFAULT_MULTIPLE_OPTION = {
+  delimiter: ','
+}
 
 export const ERROR_MESSAGES = {
   invalidType: (prop: string, type: string) => `Property "${prop}" is not assignable to type ${type}`,
   valueDoesNotExists: (value: string) =>
     `Value "${value}" does not exists in options`,
 };
-
-export const CLASSES = {
-  dropdown: getPluginClass("dropdown", "__"),
-  dropdownItem: getPluginClass("dropdown-item", "__"),
-  label: getPluginClass('label', '__'),
-  inner: getPluginClass('inner', '__'),
-  icon: getPluginClass('icon', '__'),
-  iconArrow: getPluginClass('icon-arrow', '__'),
-}

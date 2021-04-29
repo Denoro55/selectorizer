@@ -1,10 +1,19 @@
-import { PLUGIN_NAME, DEFAULT_OPTIONS, ERROR_MESSAGES, CLASSES } from "./const";
+import {
+  PLUGIN_NAME,
+  DEFAULT_OPTIONS,
+  ERROR_MESSAGES,
+  DEFAULT_MULTIPLE_OPTION,
+} from "./const";
 import {
   getOptions,
   createElement,
   wrapElement,
   getPluginClass,
   getClosestElement,
+  getIndexesFromValues,
+  getValuesFromIndexes,
+  joinByDelimiter,
+  getSelectedOptionsIndexes,
 } from "./helpers";
 import {
   IElements,
@@ -15,14 +24,23 @@ import {
   IExtendedOptions,
 } from "./types";
 
+const CLASSES = {
+  dropdown: getPluginClass("dropdown", "__"),
+  dropdownItem: getPluginClass("dropdown-item", "__"),
+  label: getPluginClass("label", "__"),
+  inner: getPluginClass("inner", "__"),
+  icon: getPluginClass("icon", "__"),
+  iconArrow: getPluginClass("icon-arrow", "__"),
+};
+
 class Selectorizer {
   readonly elements: IElements;
   readonly state: IState;
   readonly options: IExtendedOptions;
 
-  constructor(select: HTMLSelectElement, options: IOptions = {}) {
+  constructor($select: HTMLSelectElement, options: IOptions = {}) {
     this.elements = {
-      $select: select,
+      $select: $select,
       $wrapper: null,
       $inner: null,
       $label: null,
@@ -33,13 +51,19 @@ class Selectorizer {
     this.options = {
       ...DEFAULT_OPTIONS,
       ...options,
+      // TODO: refactor. hard to read
+      multiple: options.multiple
+        ? options.multiple
+        : $select.multiple
+        ? DEFAULT_MULTIPLE_OPTION
+        : undefined,
     };
 
     this.state = {
       isOpened: false,
       isNative: this.isSelectNative(),
-      currentValue: "",
       options: [],
+      selected: [],
       dir: "bottom",
     };
 
@@ -49,6 +73,7 @@ class Selectorizer {
     this.onDropdownItemClick = this.onDropdownItemClick.bind(this);
 
     this.validateConfig();
+
     this.init();
     this.initListeners();
   }
@@ -94,7 +119,7 @@ class Selectorizer {
     this.initIcon();
     this.initOptions();
 
-    this.state.currentValue = $select.value;
+    this.state.selected = getSelectedOptionsIndexes(this.state.options);
 
     wrapElement(this.elements.$wrapper, $select);
 
@@ -127,17 +152,17 @@ class Selectorizer {
   private initOptions() {
     const { $select } = this.elements;
 
-    const $allOptions = $select.querySelectorAll("option");
-
-    const options = getOptions($allOptions);
-    this.state.options = options;
+    this.state.options = getOptions($select.options);
   }
 
   private initListeners() {
     window.addEventListener("resize", this.onResizeListener);
     window.addEventListener("click", this.onDocumentClick, true);
 
-    this.elements.$dropdown?.addEventListener("click", this.onDropdownItemClick);
+    this.elements.$dropdown?.addEventListener(
+      "click",
+      this.onDropdownItemClick
+    );
 
     this.elements.$inner?.addEventListener("click", (e: MouseEvent) => {
       if (!(e.target instanceof HTMLElement)) {
@@ -163,6 +188,9 @@ class Selectorizer {
   }
 
   private onDropdownItemClick(e: MouseEvent) {
+    const { multiple } = this.options;
+    const { options, selected } = this.state;
+
     if (!(e.target instanceof HTMLElement)) {
       return;
     }
@@ -173,8 +201,27 @@ class Selectorizer {
       const dataIndex = $dropdownItem.getAttribute("data-index");
       const index = dataIndex ? +dataIndex : null;
 
-      if (index !== null && this.state.options[index] && !this.state.options[index].disabled) {
-        this.change(this.state.options[index].value);
+      if (index !== null) {
+        const option = options[index];
+
+        if (option && !option.disabled) {
+          if (multiple) {
+            const nextValues = getValuesFromIndexes(selected, options);
+
+            if (selected.includes(index)) {
+              const valueIndex = nextValues.findIndex(
+                (v) => v === option.value
+              );
+              nextValues.splice(valueIndex, 1);
+            } else {
+              nextValues.push(option.value);
+            }
+
+            this.change(nextValues);
+          } else {
+            this.change(option.value);
+          }
+        }
       }
     }
   }
@@ -205,6 +252,25 @@ class Selectorizer {
     this.change(e.target.value);
   }
 
+  getDelimiter() {
+    const { multiple } = this.options;
+
+    return multiple ? multiple.delimiter : ",";
+  }
+
+  getCurrentValue(): string {
+    const { options, selected } = this.state;
+
+    return joinByDelimiter(
+      getValuesFromIndexes(selected, options),
+      this.getDelimiter()
+    );
+  }
+
+  getPlaceholder() {
+    return this.options.placeholder;
+  }
+
   private toggleOpened() {
     if (this.state.isOpened) {
       this.close();
@@ -229,10 +295,6 @@ class Selectorizer {
     }
 
     return classes.join(" ");
-  }
-
-  private getOptionByValue(value: string) {
-    return this.state.options.find((opt) => opt.value === value);
   }
 
   open() {
@@ -266,22 +328,29 @@ class Selectorizer {
     }
   }
 
-  change(value: string) {
-    const option = this.getOptionByValue(value);
+  change(value: string | string[]) {
+    const nextSelectedIndexes = getIndexesFromValues(value, this.state.options);
 
-    if (option) {
-      const isNewValue = value !== this.state.currentValue;
+    const nextValue = joinByDelimiter(
+      getValuesFromIndexes(nextSelectedIndexes, this.state.options),
+      this.getDelimiter()
+    );
 
-      if (this.options.callbacks?.beforeChange && isNewValue) {
-        this.options.callbacks.beforeChange(this);
-      }
+    const isNewValue = nextValue !== this.getCurrentValue();
 
-      this.state.currentValue = value;
+    if (this.options.callbacks?.beforeChange && isNewValue) {
+      this.options.callbacks.beforeChange(this);
+    }
 
-      if (this.options.callbacks?.change && isNewValue) {
-        this.options.callbacks.change(this);
-      }
+    this.setSelectedOptions(nextSelectedIndexes);
 
+    if (this.options.callbacks?.change && isNewValue) {
+      this.options.callbacks.change(this);
+    }
+
+    if (this.options.multiple) {
+      this.preRender();
+    } else {
       this.close();
     }
   }
@@ -316,17 +385,28 @@ class Selectorizer {
     this.elements.$select.innerHTML = "";
   }
 
+  private setSelectedOptions(indexes: number[]) {
+    this.state.selected = indexes;
+
+    this.state.options.forEach((option, index) => {
+      const isSelected = indexes.includes(index);
+
+      option.selected = isSelected;
+    });
+  }
+
   setOptions(newOptions: ISelectOption[]) {
-    const { currentValue } = this.state;
+    const { selected } = this.state;
+
+    const nextSelectedIndexes = getIndexesFromValues(
+      getValuesFromIndexes(selected, newOptions),
+      newOptions
+    );
+
+    this.setSelectedOptions(nextSelectedIndexes);
 
     this.removeOptions();
     this.addOptions(newOptions);
-
-    this.state.currentValue = newOptions.some(
-      (opt) => opt.value === currentValue
-    )
-      ? this.state.currentValue
-      : "";
   }
 
   addOptions(newOptions: ISelectOption[]) {
@@ -377,17 +457,19 @@ class Selectorizer {
 
   private preRender() {
     const { calculateDropdownDir } = this.options;
-    this.elements.$select.value = this.state.currentValue;
+    const { $wrapper } = this.elements;
 
-    const selectorizer = this.elements.$wrapper;
+    const currentValue = this.getCurrentValue();
 
-    if (selectorizer) {
+    this.elements.$select.value = currentValue ?? "";
+
+    if ($wrapper) {
       if (calculateDropdownDir) {
         this.state.dir = calculateDropdownDir(this);
       } else {
         const windowOffsetY = window.pageYOffset;
         const windowHeight = window.innerHeight;
-        const elY = selectorizer.offsetTop;
+        const elY = $wrapper.offsetTop;
         const middleY = (windowOffsetY + windowHeight) / 2;
 
         this.state.dir = middleY > elY ? "bottom" : "top";
@@ -398,14 +480,14 @@ class Selectorizer {
   }
 
   private renderDropdownList = (options: ISelectOption[]) => {
-    const { currentValue } = this.state;
     const { renderOption } = this.options;
+    const { selected } = this.state;
 
     return options
       .map((option, index) => {
-        const { value, text, disabled } = option;
+        const { text, disabled } = option;
 
-        const isSelected = currentValue === value;
+        const isSelected = selected.includes(index);
         const classes = [CLASSES.dropdownItem];
 
         if (isSelected) {
@@ -417,7 +499,7 @@ class Selectorizer {
         }
 
         const optionContent = renderOption
-          ? renderOption(this, option, isSelected)
+          ? renderOption(this, option)
           : text;
 
         return createElement("div", classes, optionContent, [
@@ -429,17 +511,14 @@ class Selectorizer {
 
   private render() {
     const { $label, $wrapper, $dropdown } = this.elements;
-    const { renderLabel, renderPlaceholder } = this.options;
-    const classes = this.getClasses();
-    const option = this.getOptionByValue(this.state.currentValue);
-    let optionText;
+    const { renderLabel } = this.options;
 
-    if (option) {
-      optionText = renderLabel ? renderLabel(this) : option.text;
-    } else {
-      optionText = renderPlaceholder
-        ? renderPlaceholder(this, this.options.placeholder)
-        : this.options.placeholder;
+    const classes = this.getClasses();
+
+    let value = renderLabel ? renderLabel(this) : this.getCurrentValue();
+
+    if (!value) {
+      value = this.getPlaceholder();
     }
 
     if ($dropdown) {
@@ -448,7 +527,7 @@ class Selectorizer {
     }
 
     if ($label) {
-      $label.innerHTML = optionText;
+      $label.innerHTML = value;
     }
 
     if ($wrapper) {
