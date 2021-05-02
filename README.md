@@ -7,7 +7,7 @@ Demo page: https://denoro55.github.io/selectorizer/
 
 **Works in IE 10+**
 
-### implemented methods:
+## implemented methods:
 
 - getValues
 - open
@@ -18,7 +18,26 @@ Demo page: https://denoro55.github.io/selectorizer/
 - refresh
 - destroy
 
-### implemented callbacks:
+## options:
+
+| Property             | Description                                                    | Type                   | Default value  |
+|----------------------|----------------------------------------------------------------|------------------------|----------------|
+| withIcon             | Set icon rendering                                             | boolean                | true           |
+| iconHtml             | Set icon html                                                  | string                 |                |
+| isNativeOnMobile     | Show native dropdown on mobiles. Updates on window resize      | boolean                | false          |
+| isMobile             | Set pattern for detecting mobile screen                        | function               | function       |
+| maxHeight            | Max height of dropdown                                         | number                 |                |
+| classes              | Additional classes on selectorizer wrapper                     | string[]               | []             |
+| placeholder          | Label value when no selected options                           | string                 | "Select value" |
+| renderOption         | Set html of option                                             | function               |                |
+| renderLabel          | Set label html of selectorizer                                 | function               |                |
+| closeOnClickOutside  | Close selectorizer when click outside                          | boolean                | true           |
+| calculateDropdownDir | Define dropdown position before open                           | boolean                | function       |
+| multiple             | Set delimiter of multiple select                               | { delimiter: string }	 |                |
+| callbacks            | Define callback functions that triggers after different events | object                 |                |
+
+
+## callbacks:
 
 - beforeInit?: (select: Selectorizer) => void;
 - init?: (select: Selectorizer) => void;
@@ -33,25 +52,6 @@ Demo page: https://denoro55.github.io/selectorizer/
 - click?: (select: Selectorizer) => void;
 - beforeDestroy?: (select: Selectorizer) => void;
 - destroy?: (select: Selectorizer) => void;
-
-### options:
-
-| Property             | Description                                        | Type                  | Default value  |
-|----------------------|----------------------------------------------------|-----------------------|----------------|
-| withIcon             | Set icon rendering                                 | boolean               | true           |
-| iconHtml             | Set icon html                                      | string                |                |
-| isNativeOnMobile     | Set native dropdown on mobiles. Updates on resizes | boolean               | false          |
-| isMobile             | Set pattern for detecting mobile screen            | function              | function       |
-| maxHeight            | Max height of dropdown                             | number                |                |
-| classes              | Additional classes on selectorizer wrapper         | string[]              | []             |
-| placeholder          | Label value when no selected options               | string                | "Select value" |
-| renderOption         | Define html of the option                          | function              |                |
-| renderLabel          | Define label html of the selectorizer              | function              |                |
-| closeOnClickOutside  | Close selectorizer when click outside              | boolean               | true           |
-| calculateDropdownDir | Define dropdown position before open               | boolean               |                |
-| multiple             | Define delimiter of multiple select                | { delimiter: string } |                |
-| callbacks            | Set callbacks                                      | object                |                |
-
 
 ## How to use:
 
@@ -104,12 +104,12 @@ selectorize(selects, {
       );
     },
   },
-  renderOption: (select, option) =>
+  renderOption: (selectorizer, option) =>
     `<div class="my-awesome-option">${option.text}</div>`,
-  renderLabel: (select) =>
-    `<div class="my-awesome-label">${select.getState().currentValue}</div>`,
-  renderPlaceholder: (select, placeholder) =>
-    `<div class="my-awesome-placeholder">${placeholder}</div>`,
+  renderLabel: (selectorizer) =>
+    `<div class="my-awesome-label">${selectorizer.getCurrentValue()}</div>`,
+  renderPlaceholder: (selectorizer) =>
+    `<div class="my-awesome-placeholder">${selectorizer.getConfig().placeholder}</div>`,
 });
 
 // ok. let's start to do something with our selects
@@ -155,7 +155,3 @@ selectorize(selects).setOptions([
 // *** destroy :( ***
 selectorize(selects).destroy();
 ```
-
----
-
-Multiple selects soon
