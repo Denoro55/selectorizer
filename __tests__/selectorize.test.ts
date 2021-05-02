@@ -1,195 +1,197 @@
 import { selectorize } from "../src";
 
-let $emptySelect: HTMLSelectElement, $select: HTMLSelectElement;
+import { generateOptions } from "../__mocks__/options";
+import { $createSelect } from "../__mocks__/dom";
 
-import {
-  MOCK_SELECT_OPTIONS,
-  MOCK_SELECT_OPTIONS_2,
-} from "../__mocks__/options";
+let $emptySelect: HTMLSelectElement, $singleSelect: HTMLSelectElement;
 
 describe("selectorizer", () => {
   beforeEach(() => {
-    $emptySelect = document.createElement("select");
-
-    $select = document.createElement("select");
-    for (let i = 1; i < 4; i++) {
-      const $option = document.createElement("option");
-      $option.value = `option ${i}`;
-      $option.innerHTML = `option ${i}`;
-      $select.appendChild($option);
-    }
+    $emptySelect = $createSelect(0);
+    $singleSelect = $createSelect(3);
   });
 
-  test("init", () => {
-    const $div = document.createElement("div") as any;
+  test("init not a select", () => {
+    document.body.appendChild(document.createElement("div"));
+    document.body.appendChild(document.createElement("div"));
 
-    expect(() => selectorize($div)).toThrow("Element must be a select");
+    const $divs = document.querySelectorAll("div") as any;
+
+    expect(() => selectorize($divs[0])).toThrow("Element must be a select");
+    expect(() => selectorize($divs)).toThrow(
+      "All of the elements must be a select"
+    );
   });
 
-  // test("select with no options", () => {
-  //   const selectorizer = selectorize($emptySelect).selectorizers[0];
+  test("init single select with no options", () => {
+    const selectorizer = selectorize($emptySelect).selectorizers[0];
 
-  //   expect(selectorizer.elements.$label?.innerHTML).toBe(
-  //     selectorizer.options.placeholder
-  //   );
-  //   expect(selectorizer.state.options.length).toBe(0);
-  //   expect(selectorizer.state.currentValue).toBe("");
-  //   expect(selectorizer.elements.$select.value).toBe("");
-  // });
+    expect(selectorizer.getElements().$label?.innerHTML).toBe(
+      selectorizer.getConfig().placeholder
+    );
+    expect(selectorizer.getState().options.length).toBe(0);
+    expect(selectorizer.getCurrentValue()).toBe("");
+    expect(selectorizer.getElements().$select.value).toBe("");
+  });
 
-  // test("select with options", () => {
-  //   const selectorizer = selectorize($select).selectorizers[0];
-  //   const expectedValue = "option 1";
+  test("init single select with options", () => {
+    const selectorizer = selectorize($singleSelect).selectorizers[0];
+    const expectedValue = "option 1";
 
-  //   expect(selectorizer.elements.$label?.innerHTML).toBe(expectedValue);
-  //   expect(selectorizer.state.options.length).toBe(3);
-  //   expect(selectorizer.state.currentValue).toBe(expectedValue);
-  //   expect(selectorizer.elements.$select.value).toBe(expectedValue);
-  // });
+    expect(selectorizer.getElements().$label?.innerHTML).toBe(expectedValue);
+    expect(selectorizer.getState().options.length).toBe(3);
+    expect(selectorizer.getCurrentValue()).toBe(expectedValue);
+    expect(selectorizer.getElements().$select.value).toBe(expectedValue);
+  });
 
-  // test("trigger open and close", () => {
-  //   const selectorizer = selectorize($emptySelect).selectorizers[0];
+  test("init multiple select without selected options", () => {
+    const selectorizer = selectorize($createSelect(3, [], true))
+      .selectorizers[0];
+    const expectedValue = "";
 
-  //   selectorizer.open();
-  //   expect(selectorizer.state.isOpened).toBe(true);
-  //   expect(selectorizer.elements.$wrapper?.className).toBe(
-  //     "selectorizer selectorizer-open"
-  //   );
+    expect(selectorizer.getElements().$label?.innerHTML).toBe(
+      selectorizer.getConfig().placeholder
+    );
+    expect(selectorizer.getState().options.length).toBe(3);
+    expect(selectorizer.getCurrentValue()).toBe(expectedValue);
+    expect(selectorizer.getElements().$select.value).toBe(expectedValue);
+  });
 
-  //   selectorizer.close();
-  //   expect(selectorizer.state.isOpened).toBe(false);
-  //   expect(selectorizer.elements.$wrapper?.className).toBe("selectorizer");
-  // });
+  test("init multiple select with selected options", () => {
+    const selectorizer = selectorize($createSelect(3, [1, 2], true))
+      .selectorizers[0];
+    const expectedValues = ["option 2", "option 3"];
 
-  // test("add options", () => {
-  //   const selectorizer = selectorize($emptySelect).selectorizers[0];
+    expect(selectorizer.getElements().$label?.innerHTML).toBe(
+      expectedValues.join(",")
+    );
+    expect(selectorizer.getState().options.length).toBe(3);
+    expect(selectorizer.getState().options[1].selected).toBeTruthy();
+    expect(selectorizer.getState().options[2].selected).toBeTruthy();
+    expect(selectorizer.getState().selected).toEqual([1, 2]);
+    expect(selectorizer.getCurrentValue()).toBe(expectedValues.join(","));
+    expect(selectorizer.getElements().$select.value).toBe(expectedValues[0]);
+  });
 
-  //   selectorizer.addOptions(MOCK_SELECT_OPTIONS);
+  test("open and close", () => {
+    const selectorizer = selectorize($emptySelect).selectorizers[0];
 
-  //   expect(selectorizer.state.options.length).toBe(3);
-  //   expect(selectorizer.elements.$label?.innerHTML).toBe(
-  //     selectorizer.options.placeholder
-  //   );
-  //   expect(selectorizer.state.currentValue).toBe("");
-  //   expect(selectorizer.elements.$select.value).toBe("");
-  // });
+    selectorizer.open();
+    expect(selectorizer.getState().isOpened).toBe(true);
+    expect(selectorizer.getElements().$wrapper?.className).toBe(
+      "selectorizer selectorizer-open"
+    );
 
-  // test("trigger change", () => {
-  //   const selectorizer = selectorize($emptySelect).selectorizers[0];
+    selectorizer.close();
+    expect(selectorizer.getState().isOpened).toBe(false);
+    expect(selectorizer.getElements().$wrapper?.className).toBe("selectorizer");
+  });
 
-  //   expect(selectorizer.elements.$label?.innerHTML).toBe(
-  //     selectorizer.options.placeholder
-  //   );
-  //   expect(selectorizer.state.currentValue).toBe("");
-  //   expect(selectorizer.elements.$select.value).toBe("");
+  test("change single select", () => {
+    const selectorizer = selectorize($singleSelect).selectorizers[0];
 
-  //   selectorizer.addOptions(MOCK_SELECT_OPTIONS);
-  //   const nextValue = "option 2";
+    const expectedValue = "option 1";
+    const newValue = "option 3";
 
-  //   selectorizer.change(nextValue);
+    const elements = selectorizer.getElements();
 
-  //   expect(selectorizer.elements.$label?.innerHTML).toBe(nextValue);
-  //   expect(selectorizer.state.currentValue).toBe(nextValue);
-  //   expect(selectorizer.elements.$select.value).toBe(nextValue);
+    expect(elements.$label?.innerHTML).toBe(expectedValue);
+    expect(selectorizer.getCurrentValue()).toBe(expectedValue);
+    expect(elements.$select.value).toBe(expectedValue);
 
-  //   const unknownValue = "unknown value";
-  //   selectorizer.change(unknownValue);
+    selectorizer.change(newValue);
 
-  //   expect(selectorizer.elements.$label?.innerHTML).toBe(nextValue);
-  //   expect(selectorizer.state.currentValue).toBe(nextValue);
-  //   expect(selectorizer.elements.$select.value).toBe(nextValue);
-  // });
+    expect(elements.$label?.innerHTML).toBe(newValue);
+    expect(selectorizer.getCurrentValue()).toBe(newValue);
+    expect(elements.$select.value).toBe(newValue);
 
-  // test("set options", () => {
-  //   const selectorizer = selectorize($emptySelect).selectorizers[0];
-  //   const expectedValue = "option 2";
-  //   const expectedValue2 = "";
+    const unknownValue = "unknown value";
+    selectorizer.change(unknownValue);
 
-  //   selectorizer.addOptions(MOCK_SELECT_OPTIONS);
-  //   expect(selectorizer.state.options).toEqual(MOCK_SELECT_OPTIONS);
+    expect(elements.$label?.innerHTML).toBe(selectorizer.getConfig().placeholder);
+    expect(selectorizer.getCurrentValue()).toBe("");
+    expect(elements.$select.value).toBe("");
+  });
 
-  //   selectorizer.change(expectedValue);
+  test("change multiple select", () => {
+    const selectorizer = selectorize($createSelect(3, [1], true))
+      .selectorizers[0];
+    const expectedValue = "option 2";
+    const newValues = ["option 1", "option 2", "option 3"];
+    const newValues2 = ["option 1", "option 2"];
 
-  //   expect(selectorizer.elements.$label?.innerHTML).toBe(expectedValue);
-  //   expect(selectorizer.state.currentValue).toBe(expectedValue);
-  //   expect(selectorizer.elements.$select.value).toBe(expectedValue);
+    expect(selectorizer.getElements().$label?.innerHTML).toBe(expectedValue);
+    selectorizer.change(newValues);
+    expect(selectorizer.getCurrentValue()).toBe(newValues.join(','));
 
-  //   selectorizer.addOptions(MOCK_SELECT_OPTIONS_2);
-  //   expect(selectorizer.state.options).toEqual([
-  //     ...MOCK_SELECT_OPTIONS,
-  //     ...MOCK_SELECT_OPTIONS_2,
-  //   ]);
+    expect(selectorizer.getElements().$select.options[0].selected).toBeTruthy();
+    expect(selectorizer.getElements().$select.options[1].selected).toBeTruthy();
+    expect(selectorizer.getElements().$select.options[2].selected).toBeTruthy();
 
-  //   selectorizer.setOptions(MOCK_SELECT_OPTIONS_2);
-  //   expect(selectorizer.state.options).toStrictEqual(MOCK_SELECT_OPTIONS_2);
+    selectorizer.change(newValues2);
+    expect(selectorizer.getCurrentValue()).toBe(newValues2.join(','));
 
-  //   expect(selectorizer.elements.$label?.innerHTML).toBe(
-  //     selectorizer.options.placeholder
-  //   );
-  //   expect(selectorizer.state.currentValue).toBe(expectedValue2);
-  //   expect(selectorizer.elements.$select.value).toBe(expectedValue2);
-  // });
+    expect(selectorizer.getElements().$select.options[0].selected).toBeTruthy();
+    expect(selectorizer.getElements().$select.options[1].selected).toBeTruthy();
+    expect(selectorizer.getElements().$select.options[2].selected).toBeFalsy();
+  });
 
-  // test("render option", () => {
-  //   const additionalText = ' additional text';
-  //   const exptectedValue = 'option 1';
+  test("add options", () => {
+    const selectorizer = selectorize($emptySelect).selectorizers[0];
 
-  //   const selectorizer = selectorize($select, {
-  //     renderOption: (select, option) => option.value + additionalText
-  //   }).selectorizers[0];
-    
-  //   const $firstOption = selectorizer.elements.$dropdown?.children[0];
-    
-  //   expect($firstOption?.innerHTML).toBe(
-  //     selectorizer.state.options[0].value + additionalText
-  //   );
+    selectorizer.addOptions(generateOptions(3));
 
-  //   expect(selectorizer.state.currentValue).toBe(exptectedValue);
-  //   expect(selectorizer.elements.$select.value).toBe(exptectedValue);
-  // });
+    expect(selectorizer.getState().options.length).toBe(3);
+    expect(selectorizer.getElements().$label?.innerHTML).toBe(
+      selectorizer.getConfig().placeholder
+    );
+    expect(selectorizer.getCurrentValue()).toBe("");
+    expect(selectorizer.getElements().$select.value).toBe("");
+  });
 
-  // test("render option 2", () => {
-  //   const additionalText = ' additional text';
-  //   const exptectedValue = 'option 1';
+  test("set options", () => {
+    const selectorizer = selectorize($singleSelect).selectorizers[0];
 
-  //   const selectorizer = selectorize($select, {
-  //     renderOption: (select, option) => option.value + additionalText
-  //   }).selectorizers[0];
+    expect(selectorizer.getState().options.length).toBe(3);
+    selectorizer.setOptions(generateOptions(2));
+    expect(selectorizer.getState().options.length).toBe(2);
+  });
 
-  //   selectorizer.addOptions(MOCK_SELECT_OPTIONS_2);
+  test("render option", () => {
+    const additionalText = " additional text";
+    const exptectedValue = "option 1";
 
-  //   const $fourthOption = selectorizer.elements.$dropdown?.children[3];
-    
-  //   expect($fourthOption?.innerHTML).toBe(
-  //     selectorizer.state.options[3].value + additionalText
-  //   );
+    const selectorizer = selectorize($singleSelect, {
+      renderOption: (select, option) => option.value + additionalText,
+    }).selectorizers[0];
 
-  //   expect(selectorizer.state.currentValue).toBe(exptectedValue);
-  //   expect(selectorizer.elements.$select.value).toBe(exptectedValue);
-  // });
+    expect(selectorizer.getElements().$dropdown?.children[0]?.innerHTML).toBe(
+      selectorizer.getState().options[0].value + additionalText
+    );
+    expect(selectorizer.getElements().$dropdown?.children[1].innerHTML).toBe(
+      selectorizer.getState().options[1].value + additionalText
+    );
 
-  // test("render label", () => {
-  //   const expectedLabel = 'render label';
-  //   const exptectedValue = "option 3"
+    expect(selectorizer.getCurrentValue()).toBe(exptectedValue);
+    expect(selectorizer.getElements().$select.value).toBe(exptectedValue);
+  });
 
-  //   const selectorizer = selectorize($select, {
-  //     renderLabel: () => expectedLabel
-  //   }).selectorizers[0];
-    
-  //   expect(selectorizer.elements.$label?.innerHTML).toBe(
-  //     expectedLabel
-  //   );
+  test("render label", () => {
+    const expectedLabel = "custom label";
+    const exptectedValue = "option 3";
 
-  //   expect(selectorizer.state.options[2].value).toBe(
-  //     exptectedValue
-  //   );
+    const selectorizer = selectorize($singleSelect, {
+      renderLabel: () => expectedLabel,
+    }).selectorizers[0];
 
-  //   selectorizer.change(exptectedValue);
+    expect(selectorizer.getElements().$label?.innerHTML).toBe(expectedLabel);
 
-  //   expect(selectorizer.elements.$label?.innerHTML).toBe(
-  //     expectedLabel
-  //   );
-  //   expect(selectorizer.state.currentValue).toBe(exptectedValue);
-  //   expect(selectorizer.elements.$select.value).toBe(exptectedValue);
-  // });
+    expect(selectorizer.getState().options[2].value).toBe(exptectedValue);
+
+    selectorizer.change(exptectedValue);
+
+    expect(selectorizer.getElements().$label?.innerHTML).toBe(expectedLabel);
+    expect(selectorizer.getCurrentValue()).toBe(exptectedValue);
+    expect(selectorizer.getElements().$select.value).toBe(exptectedValue);
+  });
 });

@@ -4,17 +4,14 @@ const htmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
 module.exports = {
-  entry: {
-    lib: "./src/index.ts",
-    template: "./template/script.ts",
-  },
+  entry: "./template/script.ts",
   output: {
-    filename: (pathData) => {
-      return pathData.chunk.name === "lib"
-        ? "selectorizer.js"
-        : "bundle.[contenthash].js";
-    },
-    // filename: 'bundle.[contenthash].js',
+    // filename: (pathData) => {
+    //   return pathData.chunk.name === "lib"
+    //     ? "selectorizer.js"
+    //     : "bundle.[contenthash].js";
+    // },
+    filename: 'bundle.[contenthash].js',
     path: path.resolve(__dirname, "dist"),
     // publicPath: '/'
   },
@@ -67,7 +64,7 @@ module.exports = {
     }),
     new htmlWebpackPlugin({
       title: "Selectorizer",
-      chunks: ["template"],
+      // chunks: ["template"],
       template: "./template/index.html",
     }),
     new CleanWebpackPlugin(),

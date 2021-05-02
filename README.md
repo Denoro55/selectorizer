@@ -3,10 +3,7 @@ I have written the most used methods in my opinion.
 
 ![](.images/preview.png)
 
-##### Version 5.0.0
-
-- package has fully rewritten in typescript
-- new methods
+Demo page: https://denoro55.github.io/selectorizer/
 
 **Works in IE 10+**
 
@@ -23,37 +20,6 @@ I have written the most used methods in my opinion.
 
 ### implemented callbacks:
 
-- before init
-- init
-- before open
-- open
-- before close
-- close
-- before change
-- change
-- before refresh
-- refresh
-- before destroy
-- destroy
-
-### options:
-
-- withIcon?: boolean;
-- iconHtml?: string;
-- isNativeOnMobile?: boolean;
-- maxHeight?: number;
-- classes?: string[];
-- placeholder?: string;
-- closeOnClickOutside?: boolean;
-- isMobile?: () => boolean;
-- renderOption?: (select: Selectorizer, option: ISelectOption, isSelected: boolean) => string;
-- renderLabel?: (select: Selectorizer) => string;
-- renderPlaceholder?: (select: Selectorizer, placeholder: string) => string;
-- calculateDropdownDir?: (select: Selectorier) => 'bottom' | 'top';
-- callbacks?: { ...see callbacks below }
-
-### callbacks:
-
 - beforeInit?: (select: Selectorizer) => void;
 - init?: (select: Selectorizer) => void;
 - beforeOpen?: (select: Selectorizer) => void;
@@ -64,8 +30,28 @@ I have written the most used methods in my opinion.
 - change?: (select: Selectorizer) => void;
 - beforeRefresh?: (select: Selectorizer) => void;
 - refresh?: (select: Selectorizer) => void;
+- click?: (select: Selectorizer) => void;
 - beforeDestroy?: (select: Selectorizer) => void;
 - destroy?: (select: Selectorizer) => void;
+
+### options:
+
+| Property             | Description                                        | Type                  | Default value  |
+|----------------------|----------------------------------------------------|-----------------------|----------------|
+| withIcon             | Set icon rendering                                 | boolean               | true           |
+| iconHtml             | Set icon html                                      | string                |                |
+| isNativeOnMobile     | Set native dropdown on mobiles. Updates on resizes | boolean               | false          |
+| isMobile             | Set pattern for detecting mobile screen            | function              | function       |
+| maxHeight            | Max height of dropdown                             | number                |                |
+| classes              | Additional classes on selectorizer wrapper         | string[]              | []             |
+| placeholder          | Label value when no selected options               | string                | "Select value" |
+| renderOption         | Define html of the option                          | function              |                |
+| renderLabel          | Define label html of the selectorizer              | function              |                |
+| closeOnClickOutside  | Close selectorizer when click outside              | boolean               | true           |
+| calculateDropdownDir | Define dropdown position before open               | boolean               |                |
+| multiple             | Define delimiter of multiple select                | { delimiter: string } |                |
+| callbacks            | Set callbacks                                      | object                |                |
+
 
 ## How to use:
 

@@ -50,6 +50,7 @@ export interface IOptions {
     change?: (select: Selectorizer) => void;
     beforeRefresh?: (select: Selectorizer) => void;
     refresh?: (select: Selectorizer) => void;
+    click?: (select: Selectorizer) => void;
     beforeDestroy?: (select: Selectorizer) => void;
     destroy?: (select: Selectorizer) => void;
   };

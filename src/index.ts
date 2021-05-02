@@ -1,4 +1,5 @@
 import "@babel/polyfill";
+import "./scripts/polyfill";
 
 import { PLUGIN_NAME } from "./scripts/const";
 import { IOptions } from "./scripts/types";
@@ -8,7 +9,11 @@ import { Controller } from "./scripts/Controller";
 const validateSelects = ($selects: HTMLSelectElement[]) => {
   $selects.forEach(($select) => {
     if (!($select instanceof HTMLSelectElement)) {
-      throw new Error("Element must be a select");
+      if ($selects.length > 1) {
+        throw new Error("All of the elements must be a select");
+      } else {
+        throw new Error("Element must be a select");
+      }
     }
   });
 };

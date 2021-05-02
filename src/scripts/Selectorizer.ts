@@ -34,9 +34,9 @@ const CLASSES = {
 };
 
 class Selectorizer {
-  readonly elements: IElements;
-  readonly state: IState;
-  readonly options: IExtendedOptions;
+  private readonly elements: IElements;
+  private readonly state: IState;
+  private readonly options: IExtendedOptions;
 
   constructor($select: HTMLSelectElement, options: IOptions = {}) {
     this.elements = {
@@ -71,6 +71,7 @@ class Selectorizer {
     this.onSelectChangeListener = this.onSelectChangeListener.bind(this);
     this.onDocumentClick = this.onDocumentClick.bind(this);
     this.onDropdownItemClick = this.onDropdownItemClick.bind(this);
+    this.onWrapperClickListener = this.onWrapperClickListener.bind(this);
 
     this.validateConfig();
 
@@ -176,6 +177,11 @@ class Selectorizer {
       "change",
       this.onSelectChangeListener
     );
+
+    this.elements.$wrapper?.addEventListener(
+      "click",
+      this.onWrapperClickListener
+    );
   }
 
   private removeListeners() {
@@ -185,6 +191,16 @@ class Selectorizer {
       "change",
       this.onSelectChangeListener
     );
+    this.elements.$wrapper?.removeEventListener(
+      "click",
+      this.onWrapperClickListener
+    );
+  }
+
+  private onWrapperClickListener() {
+    const click = this.getConfig().callbacks?.click;
+
+    click && click(this);
   }
 
   private onDropdownItemClick(e: MouseEvent) {
@@ -249,7 +265,7 @@ class Selectorizer {
       return;
     }
 
-    this.change(e.target.value);
+    this.changeFromNative();
   }
 
   getDelimiter() {
@@ -328,6 +344,17 @@ class Selectorizer {
     }
   }
 
+  private changeFromNative() {
+    const $select = this.getElements().$select;
+
+    if ($select) {
+      this.state.options = getOptions($select.options);
+      this.state.selected = getSelectedOptionsIndexes(this.state.options);
+
+      this.preRender();
+    }
+  }
+
   change(value: string | string[]) {
     const nextSelectedIndexes = getIndexesFromValues(value, this.state.options);
 
@@ -387,11 +414,13 @@ class Selectorizer {
 
   private setSelectedOptions(indexes: number[]) {
     this.state.selected = indexes;
+    const $options = this.getElements().$select.options;
 
     this.state.options.forEach((option, index) => {
       const isSelected = indexes.includes(index);
 
       option.selected = isSelected;
+      $options[index].selected = isSelected;
     });
   }
 
@@ -459,9 +488,9 @@ class Selectorizer {
     const { calculateDropdownDir } = this.options;
     const { $wrapper } = this.elements;
 
-    const currentValue = this.getCurrentValue();
-
-    this.elements.$select.value = currentValue ?? "";
+    if (this.state.selected.length < 1) {
+      this.elements.$select.value = "";
+    }
 
     if ($wrapper) {
       if (calculateDropdownDir) {
